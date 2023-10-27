@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { Book } from "./models/bookModel.js";
 
 const app = express();
+// middleware for parsing request body
 app.use(express.json());
 
 app.get("/", (request, response) => {
@@ -11,9 +12,17 @@ app.get("/", (request, response) => {
   return response.status(234).send("Mern stack tutorial");
 });
 
-// get all books to the database
-
-
+// get all books from the database
+app.get('/books', async (request, response)=>{
+    try{
+        const books = await Book.find({})
+    return response.status(200).send(books)
+    }
+    catch(error){
+       console.log('Error: ', error);
+       response.status(500).send({message: error.message})
+    }
+})
 
 //link mongoose local to mongoDB
 mongoose
@@ -29,31 +38,63 @@ mongoose
     console.error("Failed to connect to the database", err);
   });
 
-  // a pot request from /books end pont
+  // route for saving a new book
+// app.post("/books", async (request, response) => {
+//     try {
+//       if (
+//         !request.body.title ||
+//         !request.body.author ||
+//         !request.body.PublishYear
+//       ) {
+//         return response.status(400).send({
+//           message: "Send all required fields,title, author, PublishYear",
+//         });
+//       }
+  
+//       const newBook = {
+//         title: request.body.title,
+//         author: request.body.author,
+//         publishYear: request.body.publishYear
+//       };
+  
+//       // first create a book in the database
+//       const book = await Book.create(newBook);
+//       return response.status(201).send(book);
+     
+      
+
+
+
+
+//     } catch (error) {
+//       console.error(error.message);
+//       return response.status(500).send({ message: error.message });
+//     }
+//   });
 app.post("/books", async (request, response) => {
-    try {
-      if (
-        !request.body.title ||
-        !request.body.author ||
-        !request.body.PublishYear
-      ) {
-        return response.status(400).send({
-          message: "Send all required fields,title, author, PublishYear",
-        });
+  try {
+      console.log(request.body); // Log the request body to see what's being received
+
+      const { title, author, publishYear } = request.body; // Destructure the request body
+
+      if (!title || !author || !publishYear) {
+          return response.status(400).send({
+              message: "Send all required fields: title, author, publishYear",
+          });
       }
-  
+
       const newBook = {
-        title: request.body.title,
-        author: request.body.author,
-        publishYear: request.body.publishYear,
+          title,
+          author,
+          publishYear
       };
-  
-      //first create a book in the database
+
       const book = await Book.create(newBook);
       return response.status(201).send(book);
-    } catch (error) {
+  } catch (error) {
       console.error(error.message);
       return response.status(500).send({ message: error.message });
-    }
-  });
+  }
+});
+
   
