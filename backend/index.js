@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request, response } from "express";
 import { PORT, mongoDBURL } from "./config.js";
 import mongoose from "mongoose";
 import { Book } from "./models/bookModel.js";
@@ -16,13 +16,59 @@ app.get("/", (request, response) => {
 app.get('/books', async (request, response)=>{
     try{
         const books = await Book.find({})
-    return response.status(200).send(books)
+    return response.status(200).json({
+      count:books.length,
+      data:books
+    })
+
     }
     catch(error){
        console.log('Error: ', error);
        response.status(500).send({message: error.message})
     }
 })
+
+// get book from the database based on id, ie dynamic routing
+app.get('/books/:id', async (request, response)=>{
+  try{
+    const {id}=request.params;
+      const book = await Book.findById(id)
+  return response.status(200).json(book)
+
+  }
+  catch(error){
+     console.log('Error: ', error);
+     response.status(500).send({message: error.message})
+  }
+})
+
+
+// update book in the database
+app.put('books/:id' , async (request,response)=>{
+  try {
+    const { title, author, publishYear } = request.body; // Destructure the request body
+
+    if (!title || !author || !publishYear) {
+        return response.status(400).send({
+            message: "Send all required fields: title, author, publishYear",
+        });
+      }
+      const {id}=request.params;
+      const result= await Book.findByIdAndUpdate(id, request.body)
+  return response.status(200).json(book)
+
+
+  }
+  catch(error){
+    console.log('Error: ', error.message);
+   return  response.status(500).send({message: error.message})
+  }
+})
+
+
+
+
+
 
 //link mongoose local to mongoDB
 mongoose
@@ -38,39 +84,7 @@ mongoose
     console.error("Failed to connect to the database", err);
   });
 
-  // route for saving a new book
-// app.post("/books", async (request, response) => {
-//     try {
-//       if (
-//         !request.body.title ||
-//         !request.body.author ||
-//         !request.body.PublishYear
-//       ) {
-//         return response.status(400).send({
-//           message: "Send all required fields,title, author, PublishYear",
-//         });
-//       }
-  
-//       const newBook = {
-//         title: request.body.title,
-//         author: request.body.author,
-//         publishYear: request.body.publishYear
-//       };
-  
-//       // first create a book in the database
-//       const book = await Book.create(newBook);
-//       return response.status(201).send(book);
-     
-      
-
-
-
-
-//     } catch (error) {
-//       console.error(error.message);
-//       return response.status(500).send({ message: error.message });
-//     }
-//   });
+  // route for creating  a new book in database
 app.post("/books", async (request, response) => {
   try {
       console.log(request.body); // Log the request body to see what's being received
