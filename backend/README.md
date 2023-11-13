@@ -1,6 +1,7 @@
 ![create book](images/createbook.png)
 ![delete book](images/deletebook.png)
 ![edit book](images/editbook.png)
+![edit book](images/edited.png)
 ![home](images/home.png)
 ![showbook](images/showbook.png)
 ![home](images/mongodb.png)
