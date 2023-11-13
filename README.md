@@ -5,6 +5,7 @@
 ![create book](backend/images/createbook.png)
 ![delete book](backend/images/deletebook.png)
 ![edit book](backend/images/editbook.png)
+![edit book](backend/images/edited.png)
 ![home](backend/images/home.png)
 ![showbook](backend/images/showbook.png)
 ![home](backend/images/mongodb.png)
